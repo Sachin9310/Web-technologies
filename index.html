@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- LOGIN PAGE -->
+        <div id="login-page" class="page active">
+            <div class="login-card">
+                <h2>Hostel System Login</h2>
+                <div class="input-group">
+                    <label for="login-username">Username:</label>
+                    <input type="text" id="login-username" placeholder="Enter username">
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" placeholder="Enter password">
+                </div>
+                <button class="btn primary-btn" onclick="loginUser()">Login</button>
+                <button class="btn secondary-btn mt-3" onclick="showRegistrationPage()">Register New User</button>
+            </div>
+        </div>
+
+        <!-- REGISTRATION PAGE -->
+        <div id="registration-page" class="page">
+            <div class="card">
+                <h2>Register New Account</h2>
+                <div class="input-group">
+                    <label for="reg-username">Choose Username:</label>
+                    <input type="text" id="reg-username" placeholder="Enter desired username">
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Choose Password:</label>
+                    <input type="password" id="reg-password" placeholder="Set your password (min 6 chars)">
+                </div>
+                <div class="input-group">
+                    <label for="reg-role">Account Type:</label>
+                    <select id="reg-role">
+                        <option value="student">Student</option>
+                        <option value="warden">Warden</option>
+                    </select>
+                </div>
+                <button class="btn primary-btn" onclick="registerUser()">Register</button>
+                <button class="btn secondary-btn mt-3" onclick="showLoginPage()">Back to Login</button>
+            </div>
+        </div>
+
+        <!-- STUDENT PROFILE SETUP -->
+        <div id="student-profile-setup-page" class="page">
+            <div class="card">
+                <h2>Complete Your Student Profile</h2>
+                <p class="mb-4 text-center">Please fill in your details to get started.</p>
+                <div class="input-group">
+                    <label for="setup-name">Full Name:</label>
+                    <input type="text" id="setup-name" placeholder="Your full name" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-roll">Roll Number:</label>
+                    <input type="text" id="setup-roll" placeholder="Your roll number" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-room">Room Number:</label>
+                    <input type="text" id="setup-room" placeholder="Assigned room number" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-gmail">Email (Gmail):</label>
+                    <input type="email" id="setup-gmail" placeholder="Your Gmail address" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-phone">Your Phone Number:</label>
+                    <input type="tel" id="setup-phone" placeholder="Your contact number" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-parent-phone">Parent's Phone Number:</label>
+                    <input type="tel" id="setup-parent-phone" placeholder="Parent's contact number" required>
+                </div>
+                <div class="input-group">
+                    <label for="setup-address">Address:</label>
+                    <textarea id="setup-address" placeholder="Your full residential address" rows="3" required></textarea>
+                </div>
+                <button class="btn primary-btn" onclick="saveProfile()">Save Profile</button>
+            </div>
+        </div>
+
+        <!-- WARDEN DASHBOARD -->
+        <div id="warden-dashboard" class="page">
+            <header class="dashboard-header">
+                <h2>Warden Dashboard <span id="warden-username"></span></h2>
+                <nav class="dashboard-nav">
+                    <button class="nav-item active" data-target="warden-students">Students</button>
+                    <button class="nav-item" data-target="warden-leaves">Leaves</button>
+                    <button class="nav-item" data-target="warden-mess">Mess Payments</button>
+                    <button class="nav-item" onclick="logoutUser()">Logout</button>
+                </nav>
+            </header>
+            <div class="dashboard-content">
+
+                <!-- Students Tab -->
+                <div id="warden-students" class="tab-content active">
+                    <h3>Students List</h3>
+                    <div class="action-buttons">
+                        <button class="btn success-btn" onclick="showAddStudentModal()"><i class="fas fa-plus"></i> Add Student</button>
+                        <button class="btn warning-btn" onclick="showEditStudentModal()"><i class="fas fa-edit"></i> Edit Selected</button>
+                        <button class="btn danger-btn" onclick="simulateDeleteStudent()"><i class="fas fa-trash"></i> Delete Selected</button>
+                    </div>
+                    <div class="data-table">
+                        <div class="table-header">
+                            <span>Username</span><span>Name</span><span>Roll</span><span>Room</span>
+                            <span>Contact</span><span>Email</span><span>Parent Phone</span><span>Address</span>
+                        </div>
+                        <!-- Rows injected by loadStudents() in script.js -->
+                    </div>
+                </div>
+
+                <!-- Leaves Tab -->
+                <div id="warden-leaves" class="tab-content">
+                    <h3>Pending Leaves</h3>
+                    <div class="list-box"><!-- injected by loadWardenLeaves() --></div>
+                    <div class="action-buttons">
+                        <button class="btn success-btn" onclick="approveLeave()"><i class="fas fa-check-circle"></i> Approve Selected</button>
+                        <button class="btn danger-btn"  onclick="rejectLeave()"><i class="fas fa-times-circle"></i> Reject Selected</button>
+                    </div>
+                    <h3>All Leave History</h3>
+                    <div class="data-table">
+                        <div class="table-header">
+                            <span>ID</span><span>Student</span><span>Days</span>
+                            <span>Reason</span><span>Status</span><span>Applied At</span>
+                        </div>
+                        <!-- injected by loadWardenLeaves() -->
+                    </div>
+                </div>
+
+                <!-- Mess Payments Tab -->
+                <div id="warden-mess" class="tab-content">
+                    <h3>Mess Payments</h3>
+                    <div class="action-buttons">
+                        <button class="btn primary-btn" onclick="showAddPaymentModal()"><i class="fas fa-plus"></i> Add Payment</button>
+                    </div>
+                    <div class="data-table">
+                        <div class="table-header">
+                            <span>ID</span><span>Student</span><span>Amount</span><span>Note</span><span>Paid At</span>
+                        </div>
+                        <!-- injected by loadWardenPayments() -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENT DASHBOARD -->
+        <div id="student-dashboard" class="page">
+            <header class="dashboard-header">
+                <h2>Student Dashboard <span id="student-username"></span></h2>
+                <nav class="dashboard-nav">
+                    <button class="nav-item active" data-target="student-profile">My Profile</button>
+                    <button class="nav-item" data-target="student-leaves">Leaves</button>
+                    <button class="nav-item" data-target="student-mess">Mess Payments</button>
+                    <button class="nav-item" onclick="logoutUser()">Logout</button>
+                </nav>
+            </header>
+            <div class="dashboard-content">
+
+                <!-- Profile Tab -->
+                <div id="student-profile" class="tab-content active">
+                    <h3>My Profile</h3>
+                    <div class="profile-details">
+                        <p><strong>Username:</strong>       <span id="profile-username"></span></p>
+                        <p><strong>Name:</strong>           <span id="profile-name"></span></p>
+                        <p><strong>Roll:</strong>           <span id="profile-roll"></span></p>
+                        <p><strong>Room:</strong>           <span id="profile-room"></span></p>
+                        <p><strong>Contact:</strong>        <span id="profile-contact"></span></p>
+                        <p><strong>Email:</strong>          <span id="profile-email"></span></p>
+                        <p><strong>Parent's Phone:</strong> <span id="profile-parent-phone"></span></p>
+                        <p><strong>Address:</strong>        <span id="profile-address"></span></p>
+                    </div>
+                    <button class="btn warning-btn mt-4" onclick="showEditStudentModal('student-profile')">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+
+                <!-- Leaves Tab -->
+                <div id="student-leaves" class="tab-content">
+                    <h3>My Leaves</h3>
+                    <div class="action-buttons">
+                        <button class="btn primary-btn" onclick="showApplyLeaveModal()">
+                            <i class="fas fa-calendar-plus"></i> Apply Leave
+                        </button>
+                    </div>
+                    <div class="list-box"><!-- injected by loadStudentLeaves() --></div>
+                </div>
+
+                <!-- Mess Payments Tab -->
+                <div id="student-mess" class="tab-content">
+                    <h3>My Mess Payments</h3>
+                    <div class="data-table">
+                        <div class="table-header">
+                            <span>ID</span><span>Amount</span><span>Note</span><span>Paid At</span>
+                        </div>
+                        <!-- injected by loadStudentPayments() -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add / Edit Student -->
+    <div id="student-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="student-modal-title">Add New Student</h3>
+            <div class="input-group">
+                <label for="student-username-modal">Username:</label>
+                <input type="text" id="student-username-modal" placeholder="Student's username" required>
+            </div>
+            <div class="input-group">
+                <label for="student-name-modal">Full Name:</label>
+                <input type="text" id="student-name-modal" placeholder="Full name" required>
+            </div>
+            <div class="input-group">
+                <label for="student-roll-modal">Roll Number:</label>
+                <input type="text" id="student-roll-modal" placeholder="Roll number" required>
+            </div>
+            <div class="input-group">
+                <label for="student-room-modal">Room Number:</label>
+                <input type="text" id="student-room-modal" placeholder="Room number" required>
+            </div>
+            <div class="input-group">
+                <label for="student-contact-modal">Contact Number:</label>
+                <input type="tel" id="student-contact-modal" placeholder="Contact number" required>
+            </div>
+            <div class="input-group">
+                <label for="student-email-modal">Email (Gmail):</label>
+                <input type="email" id="student-email-modal" placeholder="Gmail address" required>
+            </div>
+            <div class="input-group">
+                <label for="student-parent-phone-modal">Parent's Phone Number:</label>
+                <input type="tel" id="student-parent-phone-modal" placeholder="Parent's contact" required>
+            </div>
+            <div class="input-group">
+                <label for="student-address-modal">Address:</label>
+                <textarea id="student-address-modal" placeholder="Full residential address" rows="3" required></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn secondary-btn" onclick="hideModal('student-modal')">Cancel</button>
+                <button class="btn primary-btn" id="student-modal-save-btn" onclick="saveStudent()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Mess Payment -->
+    <div id="add-payment-modal" class="modal">
+        <div class="modal-content">
+            <h3>Record New Mess Payment</h3>
+            <div class="input-group">
+                <label for="payment-student-username">Student Username:</label>
+                <input type="text" id="payment-student-username" placeholder="Username of student" required>
+            </div>
+            <div class="input-group">
+                <label for="payment-amount">Amount (Rs.):</label>
+                <input type="number" id="payment-amount" placeholder="e.g., 1500" step="0.01" required>
+            </div>
+            <div class="input-group">
+                <label for="payment-note">Note:</label>
+                <textarea id="payment-note" placeholder="e.g., Monthly fees, Extra meal" rows="2"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn secondary-btn" onclick="hideModal('add-payment-modal')">Cancel</button>
+                <button class="btn primary-btn" onclick="addPayment()">Record Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Apply Leave -->
+    <div id="apply-leave-modal" class="modal">
+        <div class="modal-content">
+            <h3>Apply for Leave</h3>
+            <div class="input-group">
+                <label for="leave-days">Number of Days:</label>
+                <input type="number" id="leave-days" placeholder="e.g., 3" min="1" required>
+            </div>
+            <div class="input-group">
+                <label for="leave-reason">Reason for Leave:</label>
+                <textarea id="leave-reason" placeholder="Briefly explain your reason" rows="3" required></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn secondary-btn" onclick="hideModal('apply-leave-modal')">Cancel</button>
+                <button class="btn primary-btn" onclick="applyLeave()">Submit Application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX 1: removed extra ">" after </script> -->
+    <!-- FIX 2: type="module" required for ES module imports -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
